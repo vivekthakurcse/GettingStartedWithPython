@@ -46,23 +46,6 @@ def takecommand(recognizer, microphone) -> dict:
     return response
 
 
-def takequery():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        r.adjust_for_ambient_noise(source)
-        print("Listening........")
-        audio = r.listen(source)
-    try:
-        print("Recognizing......")
-        query = r.recognize_google(audio, language='en-in')
-        query = query.lower()
-        print(f"user said : {query}\n")
-    except Exception as e:
-        print(e)
-        print("unable to recognize")
-        return "none"
-
-    return query
 
 #  wish me function for on start event
 def wishme():
@@ -175,9 +158,9 @@ my_phrases = {
               'can look at my mailbox' : ['as you wish boss', 'open email'],
               'show me my emails' : ['as your order here is your whatsapp', 'open email'],
             #  google search support
-              'open google': ['okay boss', search_google],
-              'search' :['okay boss', search_google],
-              'search about' : ['hold on boss', search_google],
+              'open google': ['okay boss', 'search google'],
+              'search' :['okay boss', 'search google'],
+              'search about' : ['hold on boss', 'search_google'],
             # youtube search support
               'open youtube': ['okay boss', 'open youtube'],
               'search on youtube' : ['hold on boss', 'open youtube'],
@@ -229,8 +212,8 @@ if __name__ == "__main__" :
             link = 'https://web.whatsapp.com/'
             openweb(link)
         # search automation --------------------
-        elif 'search_google' in command :
-            question = takequery().lower()
+        elif 'search google' in command :
+            question = takecommand(recognizer,microphone)['transcript']
             search_google(question)
         else: 
             subprocess.check_output(command,shell=True)
