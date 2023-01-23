@@ -229,7 +229,7 @@ if __name__ == "__main__" :
             link = 'https://web.whatsapp.com/'
             openweb(link)
         # search automation --------------------
-        elif  command == search_google :
+        elif 'search_google' in command :
             question = takequery().lower()
             search_google(question)
         else: 
