@@ -34,7 +34,7 @@ def takecommand(recognizer, microphone) -> dict:
                 "error": None,
                 "transcription": None}
     try:
-        response["transcription"] = recognizer.recognize_google(audio,language="en-in")
+        response["transcription"] = recognizer.recognize_google(audio,language="en")
         response["transcription"] = response["transcription"].lower()
     except sr.RequestError:
         response["success"] = False
@@ -45,6 +45,24 @@ def takecommand(recognizer, microphone) -> dict:
 
     return response
 
+
+def takequery():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source)
+        print("Listening........")
+        audio = r.listen(source)
+    try:
+        print("Recognizing......")
+        query = r.recognize_google(audio, language='en-in')
+        query = query.lower()
+        print(f"user said : {query}\n")
+    except Exception as e:
+        print(e)
+        print("unable to recognize")
+        return "none"
+
+    return query
 
 #  wish me function for on start event
 def wishme():
@@ -64,9 +82,9 @@ def openweb(link):
         print("Network failure!\n" , e)
         speak("boss i would like to adivce you to check the internet connection")
         
-def search_google(query):
+def search_google(question):
     try:
-        kit.search(query)
+        webbrowser.open(question)
     except Exception as e :
         print("Network failure!\n" , e)
      
@@ -82,16 +100,16 @@ my_phrases = {
               'good morning': ['a very good morning',None],
 
             # describing it self
-              'what can you do': ["i can open  web automation features, i can send whatsapp messages , some system automated works and so many small things currently i am in my developing phases its all i can do", 'tell features'],
-              'tell me what are things you can do': ["i am an AI based voice assistant i posses web automation features, i can send whatsapp messages , some system automated works and so many small things currently i am in my developing phases its all i can do", 'tell features'],
-              'things you can do': ["as i am an AI based voice assistant i posses web automation features, i can send whatsapp messages , some system automated works and so many small things currently i am in my developing phases its all i can do", 'tell features'],
-              'tell them what are the things you can  do': ["as i am an AI based voice assistant i posses web automation features, i can send whatsapp messages , some system automated works and so many small things currently i am in my developing phases its all i can do", 'tell features'],
+              'what can you do': ["i can open  web automation features, i can send whatsapp messages , some system automated works and so many small things currently i am in my developing phases its all i can do",None],
+              'tell me what are things you can do': ["i am an AI based voice assistant i posses web automation features, i can send whatsapp messages , some system automated works and so many small things currently i am in my developing phases its all i can do", None],
+              'things you can do': ["as i am an AI based voice assistant i posses web automation features, i can send whatsapp messages , some system automated works and so many small things currently i am in my developing phases its all i can do",None],
+              'tell them what are the things you can  do': ["as i am an AI based voice assistant i posses web automation features, i can send whatsapp messages , some system automated works and so many small things currently i am in my developing phases its all i can do",None],
             #  telling his name 
-              'who are you': ['I am ELSA, a nlp based voice assistant', 'tell name'],            
-              'what should I call you?': ['my name is VS209 but you can also call me ELSA','tell name'],
-              'i call you':['you can  call me ELSA','tell name'],
-              'what is your name':['my name is vs2306 ','tell name'],
-              'your name':['my name is vs2306 but you can also call me ELSA','tell name'],
+              'who are you': ['I am ELSA, a nlp based voice assistant',None],            
+              'what should I call you': ['my name is VS209 but you can also call me ELSA',None],
+              'i call you':['you can  call me ELSA',None],
+              'what is your name':['my name is vs2306 ',None],
+              'your name':['my name is vs2306 but you can also call me ELSA',None],
               'shutdown the system': ['Turning off', 'shutdown'],
               'turn off': ['Goodbye ;)', 'shutdown'],
               'good night': ['One moment please...', 'shutdown'],
@@ -157,9 +175,9 @@ my_phrases = {
               'can look at my mailbox' : ['as you wish boss', 'open email'],
               'show me my emails' : ['as your order here is your whatsapp', 'open email'],
             #  google search support
-              'open google': ['okay boss', 'search google'],
-              'search' :['okay boss', 'search google'],
-              'seach about' : ['hold on boss', 'search google'],
+              'open google': ['okay boss', search_google],
+              'search' :['okay boss', search_google],
+              'search about' : ['hold on boss', search_google],
             # youtube search support
               'open youtube': ['okay boss', 'open youtube'],
               'search on youtube' : ['hold on boss', 'open youtube'],
@@ -182,7 +200,6 @@ if __name__ == "__main__" :
         microphone = sr.Microphone()
         recognizer = sr.Recognizer()
         print("Listening........")
-    
         # call function 
         response = takecommand(recognizer, microphone)
         pattern = response['transcription']
@@ -212,8 +229,8 @@ if __name__ == "__main__" :
             link = 'https://web.whatsapp.com/'
             openweb(link)
         # search automation --------------------
-        elif 'search google' in command:
-            question = response['transcription'].lower().replace('search','').replace('about','')
-            kit.search(question)
+        elif  command == search_google :
+            question = takequery().lower()
+            search_google(question)
         else: 
             subprocess.check_output(command,shell=True)
